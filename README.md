@@ -37,7 +37,7 @@ This system allows you to:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/your-repo/mongodb-query-logger.git
+   git clone https://github.com/rayaanoidprime/xempla-automation.git
    cd mongodb-query-logger
    ```
 
