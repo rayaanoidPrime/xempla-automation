@@ -1,0 +1,5 @@
+AWS_REGION = 'ap-south-1'
+SNS_TOPIC_ARN = 'your-sns-topic-arn'
+S3_BUCKET = 'xempla-logs'
+LOG_FILE_PATH = '/var/log/xempla.log'
+CLOUDWATCH_NAMESPACE = 'Xempla/Queries'
