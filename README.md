@@ -38,7 +38,7 @@ This system allows you to:
 
    ```
    git clone https://github.com/rayaanoidprime/xempla-automation.git
-   cd mongodb-query-logger
+   cd xempla-automation
    ```
 
 2. Install required Python packages:
@@ -79,6 +79,70 @@ This system allows you to:
    ```
    python /myapp/src/main.py
    ```
+
+## Scheduled Tasks
+
+### Setting up Cron Jobs
+
+1. Open the crontab file for editing:
+
+   ```
+   crontab -e
+   ```
+
+2. Add the following lines to run the main application every 5 minutes and the log upload script daily:
+
+   ```
+   */5 * * * * /usr/bin/python3 /path/to/myapp/src/main.py
+   0 0 * * * /path/to/myapp/upload_logs.sh
+   ```
+
+3. Save and exit the editor.
+
+### Upload Logs Script
+
+Create a file named `upload_logs.sh` in the project root directory with the following content:
+
+```bash
+#!/bin/bash
+
+LOG_FILE="/var/log/myapp.log"
+S3_BUCKET="my-application-logs"
+TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+
+# Rotate the log file
+mv $LOG_FILE ${LOG_FILE}.${TIMESTAMP}
+
+# Compress the rotated log file
+gzip ${LOG_FILE}.${TIMESTAMP}
+
+# Upload the compressed log file to S3
+aws s3 cp ${LOG_FILE}.${TIMESTAMP}.gz s3://${S3_BUCKET}/
+
+# Create a new empty log file
+touch $LOG_FILE
+
+# Remove log files older than 7 days
+find /var/log -name "myapp.log.*" -mtime +7 -exec rm {} \;
+```
+
+Make the script executable:
+
+```
+chmod +x upload_logs.sh
+```
+
+This script rotates the log file, compresses it, uploads it to S3, and cleans up old log files. It runs daily via the cron job set up earlier.
+
+Note: Ensure that the S3 bucket name in the script matches your actual S3 bucket name, and that the EC2 instance has the necessary permissions to write to this bucket.
+
+[Sections 7-9 remain unchanged]
+
+---
+
+[The setup instructions for the EC2 instance remain unchanged]
+
+Remember to monitor your AWS usage and costs, and to secure your EC2 instance and AWS resources according to best practices.
 
 ## AWS Setup
 
@@ -133,8 +197,8 @@ To set up and run the project on an EC2 instance, follow these step-by-step inst
 4. Clone the repository:
 
    ```
-   git clone https://github.com/your-repo/mongodb-query-logger.git
-   cd mongodb-query-logger
+   git clone https://github.com/rayaanoidprime/xempla-automation.git
+   cd xempla-automation
    ```
 
 5. Install Python requirements:
